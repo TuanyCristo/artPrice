@@ -1,13 +1,13 @@
-package com.projeto.artPrice;
+package com.projeto.artprice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ArtPriceApplication {
+public class ArtpriceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ArtPriceApplication.class, args);
+		SpringApplication.run(ArtpriceApplication.class, args);
 	}
 
 }
