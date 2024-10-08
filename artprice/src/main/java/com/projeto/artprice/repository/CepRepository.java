@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.projeto.artprice.model.Cep;
 
 public interface CepRepository extends JpaRepository<Cep, Integer> {
-    Cep procurarCep(String cep);
+    
 }
 

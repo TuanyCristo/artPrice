@@ -6,6 +6,7 @@ import com.projeto.artprice.repository.UsuarioRepository;
 import com.projeto.artprice.model.Usuario;
 
 
+
 @Service
 public class UsuarioService {
     @Autowired

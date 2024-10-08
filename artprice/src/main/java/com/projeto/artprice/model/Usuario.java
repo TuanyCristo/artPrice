@@ -1,18 +1,21 @@
 package com.projeto.artprice.model;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
+import java.io.Serializable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data //getters e setters criados pelo lombok
-public class Usuario {
+@NoArgsConstructor //cria o construtor sem argumentos
+@AllArgsConstructor //cria o contrutor com todos os argumentos
+public class Usuario implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Id //chave primária do db
     @GeneratedValue(strategy = GenerationType.IDENTITY) //
     private int id;

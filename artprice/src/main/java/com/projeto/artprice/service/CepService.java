@@ -11,7 +11,8 @@ public class CepService {
     @Autowired
     private CepRepository cepRepository;
 
-    public Cep buscarCepPorCodigo(String codigoCep) {
-        return cepRepository.procurarCep(codigoCep);
+    public Cep cadastrarCep(Cep cep){
+        return cepRepository.save(cep);
     }
+
 }
