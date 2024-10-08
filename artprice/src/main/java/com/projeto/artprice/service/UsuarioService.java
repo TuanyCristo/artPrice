@@ -2,8 +2,9 @@ package com.projeto.artprice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.projeto.artprice.repository.UsuarioRepository;
+
 import com.projeto.artprice.model.Usuario;
+import com.projeto.artprice.repository.UsuarioRepository;
 
 
 
@@ -42,5 +43,9 @@ public class UsuarioService {
         }
         return usuarioAlterado;
 
+    }
+
+    public Usuario buscaPorEmail(String email){
+        return usuarioResository.findByEmail(email);
     }
 }

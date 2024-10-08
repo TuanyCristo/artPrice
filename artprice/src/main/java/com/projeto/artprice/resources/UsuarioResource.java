@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.projeto.artprice.model.Cep;
 import com.projeto.artprice.model.Endereco;
 import com.projeto.artprice.model.Usuario;
@@ -59,5 +58,6 @@ public class UsuarioResource {
         Usuario novoUsuario = usuarioService.cadastrarUsuario(usuario);
         return ResponseEntity.ok().body(novoUsuario);
     }
+
 }
 

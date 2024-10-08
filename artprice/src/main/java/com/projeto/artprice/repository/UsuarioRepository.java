@@ -6,6 +6,6 @@ import com.projeto.artprice.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer>{
 
-    Usuario buscaPorEmail(String email);
+    Usuario findByEmail(String email);
 
 }
