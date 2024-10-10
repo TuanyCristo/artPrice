@@ -19,7 +19,7 @@ public class Usuario implements Serializable {
 
     @Id //chave primária do db
     @GeneratedValue(strategy = GenerationType.IDENTITY) //
-    private int id;
+    private Long id;
 
     @NotBlank //anotação para não deixar que o campo fique nullo
     @Size(min = 3, max = 100) //anotação para exigir o tamanho mínimo do nome
@@ -36,7 +36,8 @@ public class Usuario implements Serializable {
     private String senha; 
 
     @NotNull
-    @ManyToOne //anotação para garantir que cada usuário tenha um endereço
+    @ManyToOne
+    @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Endereco endereco;
 
     @NotNull

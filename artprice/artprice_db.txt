@@ -4,36 +4,30 @@ USE artprice_db;
 
 -- Tabela CEP
 CREATE TABLE IF NOT EXISTS CEP (
-    cep CHAR(9) PRIMARY KEY,
+	id_cep INT AUTO_INCREMENT PRIMARY KEY,
+    cep CHAR(9),
     logradouro VARCHAR(255) NOT NULL,
-    bairro VARCHAR(50) NOT NULL,
-    cidade VARCHAR(50) NOT NULL,
+    bairro VARCHAR(100) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
     estado CHAR(2) NOT NULL
 );
 
 -- Tabela Endereco
 CREATE TABLE IF NOT EXISTS Endereco (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    cep CHAR(9) NOT NULL,
-    numero INT NOT NULL,
+    cep_id INT NOT NULL,
+    numero CHAR(9) NOT NULL,
     complemento VARCHAR(50),
-    FOREIGN KEY (cep) REFERENCES CEP(cep)
+    FOREIGN KEY (cep_id) REFERENCES CEP(id_cep)
 );
-
 
 -- Tabela Usuario
 CREATE TABLE IF NOT EXISTS Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-<<<<<<< HEAD
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL,
-    telefone VARCHAR(20) NOT NULL UNIQUE,
-=======
-    email VARCHAR(50) NOT NULL UNIQUE,
-    senha CHAR(12) NOT NULL,
-    telefone VARCHAR(11) NOT NULL,
->>>>>>> d3aacaa76b64cdf44a89c7fb82fc04d190ba3ab4
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha CHAR(60) NOT NULL,
+    telefone VARCHAR(15) NOT NULL,
     endereco_id INT NOT NULL,
     permissao ENUM('admin', 'padrao') NOT NULL,
     CONSTRAINT fk_usuario_endereco FOREIGN KEY (endereco_id) REFERENCES Endereco(id)
@@ -42,9 +36,9 @@ CREATE TABLE IF NOT EXISTS Usuario (
 -- Tabela Cliente
 CREATE TABLE IF NOT EXISTS Cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(50) UNIQUE,
-    telefone VARCHAR(11) NOT NULL,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    telefone VARCHAR(15) NOT NULL,
     endereco_id INT NOT NULL,
     CONSTRAINT fk_cliente_endereco FOREIGN KEY (endereco_id) REFERENCES Endereco(id)
 );
@@ -52,18 +46,18 @@ CREATE TABLE IF NOT EXISTS Cliente (
 -- Tabela Material
 CREATE TABLE IF NOT EXISTS Material (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL,
-    preco_unitario DECIMAL(10, 2) NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    preco_unitario DECIMAL(12, 2) NOT NULL,
     quantidade INT NOT NULL
 );
 
 -- Tabela Produto
 CREATE TABLE IF NOT EXISTS Produto (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(50) NOT NULL,
-    categoria VARCHAR(50),
-    preco_custo DECIMAL(10, 2) NOT NULL,
-    preco_venda DECIMAL(10, 2) NOT NULL
+    nome VARCHAR(100) NOT NULL,
+    categoria VARCHAR(100),
+    preco_custo DECIMAL(12, 2) NOT NULL, 
+    preco_venda DECIMAL(12, 2) NOT NULL
 );
 
 -- Tabela ProdutoMaterial (relacionamento entre Produto e Material)
@@ -80,7 +74,7 @@ CREATE TABLE IF NOT EXISTS ProdutoMaterial (
 CREATE TABLE IF NOT EXISTS Orcamento (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
-    valor_total DECIMAL(10, 2) NOT NULL,
+    valor_total DECIMAL(12, 2) NOT NULL,  -- Ajuste da precisão para valores maiores
     data_criacao DATE NOT NULL,
     CONSTRAINT fk_orcamento_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(id)
 );
@@ -90,7 +84,7 @@ CREATE TABLE IF NOT EXISTS OrcamentoProduto (
     orcamento_id INT NOT NULL,
     produto_id INT NOT NULL,
     quantidade INT NOT NULL,
-    preco DECIMAL(10, 2) NOT NULL,
+    preco DECIMAL(12, 2) NOT NULL,  -- Preço ajustado
     PRIMARY KEY (orcamento_id, produto_id),
     CONSTRAINT fk_orcamento_produto_orcamento FOREIGN KEY (orcamento_id) REFERENCES Orcamento(id),
     CONSTRAINT fk_orcamento_produto_produto FOREIGN KEY (produto_id) REFERENCES Produto(id)
