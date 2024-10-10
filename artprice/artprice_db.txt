@@ -6,14 +6,14 @@ USE artprice_db;
 CREATE TABLE IF NOT EXISTS CEP (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cep VARCHAR(10) NOT NULL,
-    cidade VARCHAR(100) NOT NULL,
-    estado VARCHAR(2) NOT NULL
 );
 
 -- Tabela Endereco
 CREATE TABLE IF NOT EXISTS Endereco (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cep_id INT NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    estado VARCHAR(2) NOT NULL
     logradouro VARCHAR(255) NOT NULL,
     numero VARCHAR(5) NOT NULL,
     complemento VARCHAR(100),
