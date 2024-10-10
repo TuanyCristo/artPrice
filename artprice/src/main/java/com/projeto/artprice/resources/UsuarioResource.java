@@ -46,12 +46,14 @@ public class UsuarioResource {
             throw new IllegalArgumentException("CEP não pode ser nulo");
         }
     
-        // Salva Cep
-        Cep cepSalvo = cepService.cadastrarCep(cep);
-        endereco.setCep(cepSalvo);
+        //busca o cep no banco
+        Cep buscaCep = cepService.buscarCep(cep);
+        if(buscaCep != null){
+            
+        }
     
         // Salva Endereço
-        Endereco enderecoSalvo = enderecoService.salvarEndereco(endereco);
+        Endereco enderecoSalvo = enderecoService.cadastrarEnd(endereco);
         usuario.setEndereco(enderecoSalvo);
     
         // Salva Usuario
