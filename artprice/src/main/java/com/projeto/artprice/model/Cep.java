@@ -17,10 +17,6 @@ public class Cep {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
-    private String codigoCep;
-
-    private String cidade;
-
-    private String estado;
+    private String cep;
 
 }

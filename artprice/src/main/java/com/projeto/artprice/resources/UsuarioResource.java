@@ -14,7 +14,7 @@ import com.projeto.artprice.service.EnderecoService;
 import com.projeto.artprice.service.UsuarioService;
 
 @RestController
-@RequestMapping(value = "/usuarios")
+@RequestMapping(value = "/api")
 public class UsuarioResource {
 	@Autowired
     private UsuarioService usuarioService;

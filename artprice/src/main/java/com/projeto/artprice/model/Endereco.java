@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,12 +24,21 @@ public class Endereco {
     @JoinColumn(name = "cep_id", referencedColumnName = "id") // Define o nome da coluna no bd e a coluna referenciada
     private Cep cep;
 
+    @NotNull
     private String logradouro;
 
+    @NotNull
     private String numero;
 
     private String complemento;
 
+    @NotNull
     private String bairro;
+
+    @NotNull
+    private String estado;
+
+    @NotNull
+    private String cidade;
 
 }
