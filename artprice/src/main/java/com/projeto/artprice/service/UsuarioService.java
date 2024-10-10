@@ -1,5 +1,7 @@
 package com.projeto.artprice.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import com.projeto.artprice.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
+
     @Autowired
     private UsuarioRepository usuarioResository;
 
@@ -28,9 +31,9 @@ public class UsuarioService {
         } else if (alter.getNome() != null) {
             usuarioAlterado.setNome(alter.getNome());
         } else if (alter.getEndereco() != null){
-            if(alter.getEndereco().getCep() != null){
+            if(alter.getEndereco().getCep_id() != null){
                 usuarioAlterado.setEndereco(alter.getEndereco());
-                usuarioAlterado.getEndereco().setCep(alter.getEndereco().getCep());
+                usuarioAlterado.getEndereco().setCep_id(alter.getEndereco().getCep_id());
             } else {
                 usuarioAlterado.setEndereco(alter.getEndereco());
             }
@@ -47,5 +50,9 @@ public class UsuarioService {
 
     public Usuario buscaPorEmail(String email){
         return usuarioResository.findByEmail(email);
+    }
+
+    public List<Usuario> listarTodos() {
+        return usuarioResository.findAll();
     }
 }

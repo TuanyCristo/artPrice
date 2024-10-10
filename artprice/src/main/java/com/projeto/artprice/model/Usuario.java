@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,15 +27,24 @@ public class Usuario implements Serializable {
 
     @NotBlank
     @Email //anotação para email valido
+    @Column(unique = true)
     private String email;
 
     @NotBlank
+    @NotNull
     @Size(min = 6, max = 12) //anotação para exigir o tamanho da senha
     private String senha; 
 
+    @NotNull
     @ManyToOne //anotação para garantir que cada usuário tenha um endereço
     private Endereco endereco;
 
+    @NotNull
     @NotBlank
+    @Column(unique = true)
     private String telefone;
+
+    private String permissao = "padrao";
+
+
 }

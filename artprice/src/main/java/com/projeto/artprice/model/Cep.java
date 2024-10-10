@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,10 +19,14 @@ public class Cep {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
-    private String codigoCep;
+    @NotNull
+    @Pattern(regexp = "^[0-9]{5}-[0-9]{3}$", message = "CEP inválido") //valida o formato do cep
+    private String cep;
 
+   
     private String cidade;
 
+    
     private String estado;
 
 }

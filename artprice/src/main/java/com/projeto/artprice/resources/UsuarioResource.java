@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.projeto.artprice.dto.CepDTO;
 import com.projeto.artprice.model.Cep;
 import com.projeto.artprice.model.Endereco;
 import com.projeto.artprice.model.Usuario;
@@ -13,8 +15,9 @@ import com.projeto.artprice.service.CepService;
 import com.projeto.artprice.service.EnderecoService;
 import com.projeto.artprice.service.UsuarioService;
 
+
 @RestController
-@RequestMapping(value = "/usuarios")
+@RequestMapping(value = "/api")
 public class UsuarioResource {
 	@Autowired
     private UsuarioService usuarioService;
@@ -34,27 +37,54 @@ public class UsuarioResource {
      */
     @PostMapping(value = "/cadastro")
     public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
-        // Verifica Endereço nulo
+        
+        // Verifica os campos obrigatórios
         Endereco endereco = usuario.getEndereco();
-        if (endereco == null) {
-            throw new IllegalArgumentException("Endereço não pode ser nulo");
+        if (endereco == null || endereco.getCep_id() == null || endereco.getNumero() == null || endereco.getComplemento() == null) {
+            throw new IllegalArgumentException("CEP, número e complemento são obrigatórios.");
         }
     
-        // Verifique CEP nulo
-        Cep cep = endereco.getCep();
-        if (cep == null) {
-            throw new IllegalArgumentException("CEP não pode ser nulo");
+        // Verifica CEP
+        Cep cep = endereco.getCep_id();
+        String cepFormatado = cep.getCep().replace("-", "");
+        
+        // Consulta o CEP no banco
+        Cep cepExistente = cepService.consultarCep(cepFormatado);
+    
+        if (cepExistente == null) {
+            // CEP não encontrado no banco, consulta a API ViaCEP
+            CepDTO cepDTO = cepService.consultarCepApi(cepFormatado);
+    
+            if (cepDTO != null) {
+                // Verifica se os dados retornados estão ausentes (indicando uma cidade inteira)
+                if (cepDTO.getLogradouro() == null || cepDTO.getLogradouro().isEmpty() || 
+                    cepDTO.getBairro() == null || cepDTO.getBairro().isEmpty()) {
+                    // O CEP cobre a cidade inteira (ou uma área ampla), o usuário deve fornecer logradouro e bairro
+                    if (endereco.getLogradouro() == null || endereco.getBairro() == null) {
+                        throw new IllegalArgumentException("Logradouro e bairro são obrigatórios para CEPs de cidade inteira.");
+                    }
+                } else {
+                    // Se não for uma cidade inteira, preenche os dados automaticamente com o que veio da API
+                    endereco.setLogradouro(cepDTO.getLogradouro());
+                    endereco.setBairro(cepDTO.getBairro());
+                }
+                
+                cep.setCep(cepDTO.getCep());
+                cep.setCidade(cepDTO.getLocalidade());
+                cep.setEstado(cepDTO.getUf());
+                
+                // Salva o novo CEP no banco
+                cepExistente = cepService.cadastrarCep(cep);
+            }
         }
     
-        // Salva Cep
-        Cep cepSalvo = cepService.cadastrarCep(cep);
-        endereco.setCep(cepSalvo);
+        // Associa o CEP existente ao endereço
+        endereco.setCep_id(cepExistente);
     
-        // Salva Endereço
-        Endereco enderecoSalvo = enderecoService.salvarEndereco(endereco);
-        usuario.setEndereco(enderecoSalvo);
+        // Salva o endereço no banco de dados
+        enderecoService.salvarEndereco(endereco);
     
-        // Salva Usuario
+        // Salva o usuário com o endereço associado
         Usuario novoUsuario = usuarioService.cadastrarUsuario(usuario);
         return ResponseEntity.ok().body(novoUsuario);
     }
