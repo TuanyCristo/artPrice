@@ -18,13 +18,9 @@ public class LoginResource {
     private LoginServiceImp loginServiceImp;
 
     /**
-     * Metodo que cria o usuário, primeiro ele verifica se o endereco e 
-     * o cep nao estao nulos e depois ele setta novamente(talvez eu esteja sendo
-     * redundante, opinem) para garantir que está usando o cep correto.
-     * Em seguida ele cria o usuario.
-     * Pq precisamos fazer assim? Professor pediu pra relacionar a tabela cep
-     * e a tabela endereço.
-     * @param usuario
+     * Metodo que autentica o email e senha
+     * @param loginDTO
+     * @return Usuario
      */
     @PostMapping(value = "/login")
     public ResponseEntity<Usuario> autenticar(@RequestBody LoginDTO loginDTO) {

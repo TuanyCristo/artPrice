@@ -78,11 +78,23 @@ public class UsuarioResource {
             }
         }
     
+<<<<<<< HEAD
         // Associa o CEP existente ao endereço
         endereco.setCep_id(cepExistente);
     
         // Salva o endereço no banco de dados
         enderecoService.salvarEndereco(endereco);
+=======
+        //busca o cep no banco
+        Cep buscaCep = cepService.buscarCep(cep);
+        if(buscaCep != null){
+            
+        }
+    
+        // Salva Endereço
+        Endereco enderecoSalvo = enderecoService.cadastrarEnd(endereco);
+        usuario.setEndereco(enderecoSalvo);
+>>>>>>> d3aacaa76b64cdf44a89c7fb82fc04d190ba3ab4
     
         // Salva o usuário com o endereço associado
         Usuario novoUsuario = usuarioService.cadastrarUsuario(usuario);

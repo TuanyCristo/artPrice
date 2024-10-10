@@ -4,30 +4,36 @@ USE artprice_db;
 
 -- Tabela CEP
 CREATE TABLE IF NOT EXISTS CEP (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    cep VARCHAR(10) NOT NULL,
-    cidade VARCHAR(100) NOT NULL,
-    estado VARCHAR(2) NOT NULL
+    cep CHAR(9) PRIMARY KEY,
+    logradouro VARCHAR(255) NOT NULL,
+    bairro VARCHAR(50) NOT NULL,
+    cidade VARCHAR(50) NOT NULL,
+    estado CHAR(2) NOT NULL
 );
 
 -- Tabela Endereco
 CREATE TABLE IF NOT EXISTS Endereco (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    cep_id INT NOT NULL,
-    logradouro VARCHAR(255) NOT NULL,
-    numero VARCHAR(5) NOT NULL,
-    complemento VARCHAR(100),
-    bairro VARCHAR(100) NOT NULL,
-    CONSTRAINT fk_endereco_cep FOREIGN KEY (cep_id) REFERENCES CEP(id)
+    cep CHAR(9) NOT NULL,
+    numero INT NOT NULL,
+    complemento VARCHAR(50),
+    FOREIGN KEY (cep) REFERENCES CEP(cep)
 );
+
 
 -- Tabela Usuario
 CREATE TABLE IF NOT EXISTS Usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
+<<<<<<< HEAD
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20) NOT NULL UNIQUE,
+=======
+    email VARCHAR(50) NOT NULL UNIQUE,
+    senha CHAR(12) NOT NULL,
+    telefone VARCHAR(11) NOT NULL,
+>>>>>>> d3aacaa76b64cdf44a89c7fb82fc04d190ba3ab4
     endereco_id INT NOT NULL,
     permissao ENUM('admin', 'padrao') NOT NULL,
     CONSTRAINT fk_usuario_endereco FOREIGN KEY (endereco_id) REFERENCES Endereco(id)
@@ -37,8 +43,8 @@ CREATE TABLE IF NOT EXISTS Usuario (
 CREATE TABLE IF NOT EXISTS Cliente (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE,
-    telefone VARCHAR(20) NOT NULL,
+    email VARCHAR(50) UNIQUE,
+    telefone VARCHAR(11) NOT NULL,
     endereco_id INT NOT NULL,
     CONSTRAINT fk_cliente_endereco FOREIGN KEY (endereco_id) REFERENCES Endereco(id)
 );
@@ -46,7 +52,7 @@ CREATE TABLE IF NOT EXISTS Cliente (
 -- Tabela Material
 CREATE TABLE IF NOT EXISTS Material (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
+    nome VARCHAR(50) NOT NULL,
     preco_unitario DECIMAL(10, 2) NOT NULL,
     quantidade INT NOT NULL
 );
@@ -54,7 +60,7 @@ CREATE TABLE IF NOT EXISTS Material (
 -- Tabela Produto
 CREATE TABLE IF NOT EXISTS Produto (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
+    nome VARCHAR(50) NOT NULL,
     categoria VARCHAR(50),
     preco_custo DECIMAL(10, 2) NOT NULL,
     preco_venda DECIMAL(10, 2) NOT NULL

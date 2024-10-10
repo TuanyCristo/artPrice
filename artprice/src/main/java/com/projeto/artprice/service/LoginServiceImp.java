@@ -22,7 +22,6 @@ public class LoginServiceImp implements LoginService{
             return usuario;
         }
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
