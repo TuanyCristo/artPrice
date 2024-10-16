@@ -46,18 +46,16 @@
             email: document.getElementById('email').value,
             senha: document.getElementById('senha').value,
             telefone: document.getElementById('telefone').value, // Campo de telefone adicionado
-            endereco: {
-                cep: document.getElementById('cep').value,
-                logradouro: document.getElementById('logradouro').value,
-                bairro: document.getElementById('bairro').value,
-                cidade: document.getElementById('cidade').value,
-                estado: document.getElementById('estado').value,
-                numero: document.getElementById('numero').value,
-                complemento: document.getElementById('complemento').value
-            }
+            cep: document.getElementById('cep').value,
+            logradouro: document.getElementById('logradouro').value,
+            bairro: document.getElementById('bairro').value,
+            cidade: document.getElementById('cidade').value,
+            estado: document.getElementById('estado').value,
+            numero: document.getElementById('numero').value,
+            complemento: document.getElementById('complemento').value
         };
 
-        fetch('http://localhost:8080/api/cadastro', {
+        fetch('http://localhost:8080/usuario/cadastro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

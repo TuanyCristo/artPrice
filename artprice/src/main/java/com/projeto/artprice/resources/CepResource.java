@@ -22,13 +22,19 @@ public class CepResource {
     @PostMapping(value = "/cadastroCep")
     public ResponseEntity<?> cadastrarCEP(@RequestBody Cep cep) {
         try {
-            Cep novoCep = cepService.cadastrarCep(cep);
-            return ResponseEntity.ok().body(novoCep);
+            Cep novoCep = cepService.buscaCep(cep.getCep());
+            if(novoCep != null){
+                cep.setCidade(novoCep.getCidade());
+                cep.setEstado(novoCep.getEstado());
+                cepService.cadastrarCep(cep);
+            }
+            return ResponseEntity.ok().body(cep);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao cadastrar CEP: " + e.getMessage());
         }
+        
     }
 
     @GetMapping("/listar/{cep}")

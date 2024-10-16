@@ -23,44 +23,41 @@ public class UsuarioService {
     @Autowired
     private EnderecoService enderecoService;
 
-    public Usuario cadastrarUsuario(Usuario u){
-        //busca e cadastra cep se necessário
-        Cep novoCep = u.getEndereco().getCep();
-
-        novoCep = cepService.cadastrarCep(novoCep);
-
-        //cadastra o endereço
-        Endereco novoEndereco = enderecoService.cadastrarEndereco(novoCep, u.getEndereco().getLogradouro(),
-                                u.getEndereco().getNumero(),
-                                u.getEndereco().getBairro(),
-                                u.getEndereco().getComplemento());
-
-        u.setEndereco(novoEndereco);
-
-
-        return usuarioResository.save(u);
-    }
-
-    public Usuario cadastrarUsuario(UsuarioDTO u){
-        //cria o usuário
+    public Usuario cadastrarUsuario(UsuarioDTO u) {
+        // cria o usuário
         Usuario user = new Usuario();
         user.setNome(u.getNome());
         user.setEmail(u.getEmail());
         user.setSenha(u.getSenha());
         user.setTelefone(u.getTelefone());
-
-        //busca e cadastra cep se necessário
-        Cep novoCep = cepService.buscaCep(u.getCep());
     
-        //cadastra o endereço
-        Endereco novoEndereco = enderecoService.cadastrarEndereco(novoCep, u.getLogradouro(),
-                                u.getNumero(), u.getBairro(), u.getComplemento());
+        //busca o cep
+        Cep novoCep = cepService.buscaCep(u.getCep());
+        if (novoCep == null) {
+            novoCep = cepService.buscarCepAPI(u.getCep());
+            if (novoCep == null) {
+                throw new IllegalArgumentException("CEP inválido");
+            }
+            novoCep = cepService.cadastrarCep(novoCep);
+        }
+    
+        // Cadastra o endereço
+        Endereco novoEndereco = new Endereco();
+        novoEndereco.setCep(novoCep);
+        novoEndereco.setLogradouro(u.getLogradouro());
+        novoEndereco.setBairro(u.getBairro());
+        novoEndereco.setNumero(u.getNumero());
+        novoEndereco.setComplemento(u.getComplemento());
 
-        //setta informações no usuário
-        user.setEndereco(novoEndereco);
-
+        novoEndereco = enderecoService.cadastrarEndereco(novoEndereco);
+    
+        // Associa o Endereco ao Usuario
+        user.setEndereco(novoEndereco); 
+    
         return usuarioResository.save(user);
     }
+    
+    
 
     public void deletarUsuario(Usuario u){
         usuarioResository.deleteById(u.getId());

@@ -18,14 +18,27 @@ public class CepService {
     @Autowired
     private CepRepository cepRepository;
 
-    public Cep cadastrarCep(Cep cep){
-        Cep novoCep = buscaCep(cep.getCep());
-        if(novoCep == null){
-            return cepRepository.save(tratarCep(buscaCepApi(cep.getCep())));
-        }
-        return novoCep;
+    public Cep cadastrarCep(Cep cep) {
+        return cepRepository.save(cep);
+    }
 
-    }     
+    public Cep buscaCep (String cep){
+        Cep novoCep = cepRepository.findByCep(cep);
+        if (novoCep != null) {
+            return novoCep;
+        }
+        return buscarCepAPI(cep);
+    }
+
+        /**
+     * Método para consultar a API externa (ViaCEP) e tratar o retorno.
+     * @param cep
+     * @return
+     */
+    public Cep buscarCepAPI(String cep) {
+        CepDTO cepDTO = consultaCepApi(cep);
+        return tratarCep(cepDTO);
+    }
 
     /**
      * Método criado para tratar o cepDTO e devolver um CEP
@@ -33,6 +46,9 @@ public class CepService {
      * @return
      */
     private Cep tratarCep(CepDTO cepDTO) {
+        if (cepDTO == null) {
+            throw new IllegalArgumentException("CEP não encontrado na API.");
+        }
         Cep novoCep = new Cep();
 
         novoCep.setCep(cepDTO.getCep());
@@ -47,20 +63,15 @@ public class CepService {
      * Método para consultar a API externa (ViaCEP).
      * @param cep
      */
-    public CepDTO buscaCepApi(String cep) {
+    private CepDTO consultaCepApi(String cep) {
+        if (cep == null || cep.isEmpty()) {
+            throw new IllegalArgumentException("CEP não pode ser nulo ou vazio.");
+        }
         String url = VIA_CEP_API_URL.replace("{cep}", cep);
         return restTemplate.getForObject(url, CepDTO.class);
     }
     
-    public Cep buscaCep (String cep){
-        Cep novoCep = cepRepository.findByCep(cep);
-        if (novoCep == null) {
-            CepDTO buscaCep = buscaCepApi(cep);
-            novoCep = tratarCep(buscaCep);
-            return novoCep;
-        }
-        return novoCep;
-    }
+
 
 
 

@@ -5,7 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projeto.artprice.model.Cep;
 import com.projeto.artprice.model.Endereco;
+import com.projeto.artprice.service.CepService;
 import com.projeto.artprice.service.EnderecoService;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +22,20 @@ public class EnderecoResource {
     @Autowired
     private EnderecoService enderecoService;
 
+    @Autowired
+    private CepService cepService;
+
     @PostMapping("/cadastrarEnd")
     public ResponseEntity<?> setEndereco(@RequestBody Endereco end) {
-        Endereco endereco = enderecoService.cadastrarEndereco(end.getCep(), end.getLogradouro(), end.getNumero(), end.getBairro(), end.getComplemento());
-        return ResponseEntity.ok().body(endereco);
+        Cep novoCep = cepService.buscaCep(end.getCep().getCep());
+        if(novoCep == null){
+            enderecoService.cadastrarEndereco(end);
+            return ResponseEntity.ok().body(end);
+        }
+
+        end.setCep(novoCep);
+        enderecoService.cadastrarEndereco(end);
+        return ResponseEntity.ok().body(end);
     }
     
 

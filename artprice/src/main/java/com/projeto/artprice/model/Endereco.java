@@ -1,5 +1,6 @@
 package com.projeto.artprice.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,9 +21,10 @@ public class Endereco {
     @Id //chave primária do db
     @GeneratedValue(strategy = GenerationType.IDENTITY) //
     private int id;
-
-    @ManyToOne //anotação para dizer que muitos endereços podem ter o mesmo cep
-    @JoinColumn(name = "cep_id")
+    //anotação para dizer que muitos endereços podem ter o mesmo cep
+    //a anotação também diz que o cep pode ser salvo junto com o endereço
+    @ManyToOne(cascade = CascadeType.PERSIST) 
+    @JoinColumn(name = "cep_id", nullable = false)
     private Cep cep;
 
     @NotNull

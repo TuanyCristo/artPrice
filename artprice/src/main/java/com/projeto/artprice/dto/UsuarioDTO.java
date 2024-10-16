@@ -15,5 +15,4 @@ public class UsuarioDTO {
     private String complemento;
     private String cidade;
     private String estado;
-
 }
