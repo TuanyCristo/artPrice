@@ -12,38 +12,36 @@ import com.projeto.artprice.repository.EnderecoRepository;
 public class EnderecoService {
 
     @Autowired
-    private CepService cepService;
-
-    @Autowired
     private EnderecoRepository enderecoRepository;
 
-    public Endereco cadastrarEnd(Endereco end){
+    @Autowired
+    private CepService cepService;
+
+    public Endereco cadastrarEndereco (Cep cep, String logradouro, String numero, String bairro, String complemento){
+        Endereco end = new Endereco();
+        Cep novoCep = cepService.buscaCep(cep.getCep());
+        end.setCep(novoCep);
+        CepDTO infosCep = cepService.buscaCepApi(cep.getCep());
+
+        if(infosCep.getLogradouro() == null){
+            end.setLogradouro(logradouro);
+        } else {
+            end.setLogradouro(infosCep.getLogradouro());
+        }
+
+        if(infosCep.getBairro() == null){
+            end.setBairro(bairro);
+        } else {
+            end.setBairro(infosCep.getBairro());
+        }
+
+        end.setNumero(numero);
+
+        end.setComplemento(complemento);
+        
+        
         return enderecoRepository.save(end);
     }
 
-    /**
-     * Método que verifica o endereço e retorna ele com os dados atualizados, 
-     * mas sem salvar no banco.
-     */
-    public Endereco retornaEndereco(Endereco end){
-        //busca cep no banco
-        Cep cepExistente = cepService.consultarCep(end.getCep().getCep());
-        if(cepExistente != null){
-            end.setCep(cepExistente);
-        } else {
-            //busca cep na api
-            CepDTO buscaApi = cepService.consultarCepApi(end.getCep().getCep());
 
-            //setta os dados da api
-            Cep novoCep = new Cep();
-            novoCep.setCep(buscaApi.getCep());
-            novoCep.setCidade(buscaApi.getLocalidade());
-            novoCep.setEstado(buscaApi.getUf());
-            novoCep.setLogradouro(buscaApi.getLocalidade());
-            novoCep.setBairro(buscaApi.getBairro());
-
-            end.setCep(novoCep);
-        }
-        return end;
-    }
 }

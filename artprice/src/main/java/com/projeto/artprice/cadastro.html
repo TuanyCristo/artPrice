@@ -5,55 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuário</title>
     <script>
-        function buscarEndereco() {
-            const cep = document.getElementById('cep').value;
+    function buscarEndereco() {
+        const cep = document.getElementById('cep').value.replace('-', ''); // Remove o traço
 
-            fetch(`http://localhost:8080/api/endereco/${cep}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('logradouro').value = data.cep.logradouro; // Corrigi aqui para acessar data.cep
-                    document.getElementById('bairro').value = data.cep.bairro;
-                    document.getElementById('cidade').value = data.cep.cidade; // Usando data.cep.cidade
-                    document.getElementById('estado').value = data.cep.estado; // Usando data.cep.estado
-                })
-                .catch(error => {
-                    alert('Erro ao buscar endereço.');
-                });
-        }
-
-        function cadastrarUsuario(event) {
-            event.preventDefault(); // Evitar o envio padrão do formulário
-
-            const usuarioData = {
-                nome: document.getElementById('nome').value,
-                email: document.getElementById('email').value,
-                senha: document.getElementById('senha').value,
-                endereco: {
-                    cep: document.getElementById('cep').value,
-                    logradouro: document.getElementById('logradouro').value,
-                    bairro: document.getElementById('bairro').value,
-                    cidade: document.getElementById('cidade').value, // Incluindo cidade
-                    estado: document.getElementById('estado').value, // Incluindo estado
-                    numero: document.getElementById('numero').value,
-                    complemento: document.getElementById('complemento').value
+        // URL da API do ViaCEP
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar endereço: ' + response.statusText);
                 }
-            };
-    
-            fetch('http://localhost:8080/api/cadastro', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(usuarioData)
+                return response.json(); // Retorna o JSON se tudo estiver certo
             })
-            .then(response => response.json())
             .then(data => {
-                alert('Usuário cadastrado com sucesso!');
+                // Preencher os campos do endereço
+                document.getElementById('logradouro').value = data.logradouro || '';
+                document.getElementById('bairro').value = data.bairro || '';
+                document.getElementById('cidade').value = data.localidade; // sempre disponível
+                document.getElementById('estado').value = data.uf; // sempre disponível
+
+                // Mensagem de aviso se logradouro ou bairro não estiverem disponíveis
+                const mensagemDiv = document.getElementById('mensagem');
+                if (!data.logradouro || !data.bairro) {
+                    mensagemDiv.innerText = 'Logradouro e/ou bairro não disponíveis para este CEP.';
+                    mensagemDiv.style.color = 'red';
+                } else {
+                    mensagemDiv.innerText = ''; // Limpa a mensagem se tudo estiver correto
+                }
             })
             .catch(error => {
-                alert('Erro ao cadastrar usuário.');
+                alert('Erro ao buscar endereço. Verifique o CEP e tente novamente.');
+                console.error(error); // Log do erro
             });
-        }
+    }
+
+    function cadastrarUsuario(event) {
+        event.preventDefault(); // Evitar o envio padrão do formulário
+
+        const usuarioData = {
+            nome: document.getElementById('nome').value,
+            email: document.getElementById('email').value,
+            senha: document.getElementById('senha').value,
+            telefone: document.getElementById('telefone').value, // Campo de telefone adicionado
+            endereco: {
+                cep: document.getElementById('cep').value,
+                logradouro: document.getElementById('logradouro').value,
+                bairro: document.getElementById('bairro').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value,
+                numero: document.getElementById('numero').value,
+                complemento: document.getElementById('complemento').value
+            }
+        };
+
+        fetch('http://localhost:8080/api/cadastro', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(usuarioData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao cadastrar usuário.'); // Tratamento de erro
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Usuário cadastrado com sucesso!');
+            // Limpar o formulário após o cadastro
+            document.getElementById('formCadastro').reset();
+            document.getElementById('mensagem').innerText = ''; // Limpar a mensagem
+        })
+        .catch(error => {
+            alert(error.message); // Mensagem de erro mais específica
+        });
+    }
     </script>
 </head>
 <body>
@@ -69,6 +95,9 @@
         <label for="senha">Senha:</label>
         <input type="password" id="senha" name="senha" required><br><br>
 
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required><br><br> <!-- Campo de telefone adicionado -->
+
         <h3>Endereço</h3>
         <label for="cep">CEP:</label>
         <input type="text" id="cep" name="cep" maxlength="10" onblur="buscarEndereco()" required><br><br>
@@ -79,10 +108,10 @@
         <label for="bairro">Bairro:</label>
         <input type="text" id="bairro" name="bairro" required><br><br>
 
-        <label for="cidade">Cidade:</label> <!-- Incluindo o campo Cidade -->
+        <label for="cidade">Cidade:</label>
         <input type="text" id="cidade" name="cidade" required><br><br>
 
-        <label for="estado">Estado:</label> <!-- Incluindo o campo Estado -->
+        <label for="estado">Estado:</label>
         <input type="text" id="estado" name="estado" required><br><br>
 
         <label for="numero">Número:</label>
@@ -90,6 +119,8 @@
 
         <label for="complemento">Complemento:</label>
         <input type="text" id="complemento" name="complemento"><br><br>
+
+        <div id="mensagem" style="color: red;"></div> <!-- Mensagem de aviso -->
 
         <input type="submit" value="Criar Conta">
     </form>

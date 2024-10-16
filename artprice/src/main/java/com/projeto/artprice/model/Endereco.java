@@ -26,8 +26,15 @@ public class Endereco {
     private Cep cep;
 
     @NotNull
+    private String logradouro;
+
+    @NotNull
     private String numero;
 
+    
+    @NotNull
+    private String bairro;
 
     private String complemento;
+
 }

@@ -6,8 +6,6 @@ USE artprice_db;
 CREATE TABLE IF NOT EXISTS CEP (
 	id_cep INT AUTO_INCREMENT PRIMARY KEY,
     cep CHAR(9),
-    logradouro VARCHAR(255) NOT NULL,
-    bairro VARCHAR(100) NOT NULL,
     cidade VARCHAR(100) NOT NULL,
     estado CHAR(2) NOT NULL
 );
@@ -18,6 +16,8 @@ CREATE TABLE IF NOT EXISTS Endereco (
     cep_id INT NOT NULL,
     numero CHAR(9) NOT NULL,
     complemento VARCHAR(50),
+    logradouro VARCHAR(255) NOT NULL,
+    bairro VARCHAR(100) NOT NULL,
     FOREIGN KEY (cep_id) REFERENCES CEP(id_cep)
 );
 

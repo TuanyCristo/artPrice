@@ -1,5 +1,7 @@
 package com.projeto.artprice.model;
 
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,15 +18,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor //cria o contrutor com todos os argumentos
 public class Cep {
     @Id
+    @Column(name = "id_cep")
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
     @NotNull
     @Pattern(regexp = "\\d{5}-\\d{3}", message = "CEP inválido") //valida o formato do cep
+    @Column(unique = true)
     private String cep;
 
-    @NotNull
-    private String logradouro;
 
     @NotNull
     private String estado;
@@ -32,7 +34,7 @@ public class Cep {
     @NotNull
     private String cidade;
 
-    @NotNull
-    private String bairro;
 
 }
+
+
