@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor //cria o contrutor com todos os argumentos
 public class Endereco {
     @Id //chave primária do db
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //gera automático
     private int id;
     //anotação para dizer que muitos endereços podem ter o mesmo cep
     //a anotação também diz que o cep pode ser salvo junto com o endereço

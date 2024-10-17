@@ -1,17 +1,17 @@
 package com.projeto.artprice.resources;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.projeto.artprice.dto.UsuarioDTO;
+import com.projeto.artprice.model.Usuario;
 import com.projeto.artprice.service.UsuarioService;
-
-
 
 @RestController
 @RequestMapping(value = "/usuario")
@@ -32,12 +32,13 @@ public class UsuarioResource {
     @PostMapping(value = "/cadastro")
     public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDTO usuario) {
         usuarioService.cadastrarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
-
-
-            
-
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);        
     }
-    
+
+    @GetMapping(value = "/listar-usuarios")
+    public List<UsuarioDTO> listarUsuarios() {
+        List<Usuario> usuarios = usuarioService.listarTodos();
+        return usuarios.stream().map(usuario -> new UsuarioDTO(usuario)).collect(Collectors.toList());
+    }
 }
 

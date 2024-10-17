@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.projeto.artprice.model.Cep;
 import com.projeto.artprice.model.Endereco;
 import com.projeto.artprice.service.CepService;
 import com.projeto.artprice.service.EnderecoService;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
