@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.projeto.artprice.dto.LoginDTO;
 import com.projeto.artprice.model.Usuario;
-import com.projeto.artprice.service.LoginServiceImp;
+import com.projeto.artprice.service.LoginService;
 
 @RestController
 @RequestMapping(value = "/api")
 public class LoginResource {
     @Autowired
-    private LoginServiceImp loginServiceImp;
+    private LoginService loginService;
 
     /**
      * Metodo que autentica o email e senha
@@ -37,7 +37,7 @@ public class LoginResource {
         }
      
         // Retorna usuário
-        Usuario novoUsuario = loginServiceImp.login(loginDTO);
+        Usuario novoUsuario = loginService.login(loginDTO);
         return ResponseEntity.ok().body(novoUsuario);
     }
 
