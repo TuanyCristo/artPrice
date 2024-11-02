@@ -55,12 +55,10 @@ public class UsuarioService {
     
         // Associa o Endereco ao Usuario
         user.setEndereco(novoEndereco);
-        usuarioResository.save(user);
-        Usuario cadastrado = UsuarioDTO(user);
-    
-        return cadastrado;
-    }
+        Usuario cadastrado = usuarioResository.save(user);
 
+        return new UsuarioDTO(cadastrado);
+    }
 
     public void deletarUsuario(Long id){
         usuarioResository.deleteById(id);

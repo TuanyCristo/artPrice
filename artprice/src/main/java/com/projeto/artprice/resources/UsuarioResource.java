@@ -32,9 +32,9 @@ public class UsuarioResource {
      * @param usuario
      */
     @PostMapping(value = "/cadastro")
-    public ResponseEntity<?> cadastrarUsuario(@RequestBody UsuarioDTO usuario) {
-        usuarioService.cadastrarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);        
+    public ResponseEntity<UsuarioDTO> cadastrarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        UsuarioDTO novoUsuario = usuarioService.cadastrarUsuario(usuarioDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
     }
 
     @GetMapping(value = "/listar-usuarios")
