@@ -1,6 +1,8 @@
 package com.projeto.artprice.service;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.projeto.artprice.dto.UsuarioDTO;
@@ -23,7 +25,7 @@ public class UsuarioService {
     @Autowired
     private EnderecoService enderecoService;
 
-    public Usuario cadastrarUsuario(UsuarioDTO u) {
+    public UsuarioDTO cadastrarUsuario(UsuarioDTO u) {
         // cria o usuário
         Usuario user = new Usuario();
         user.setNome(u.getNome());
@@ -52,15 +54,16 @@ public class UsuarioService {
         novoEndereco = enderecoService.cadastrarEndereco(novoEndereco);
     
         // Associa o Endereco ao Usuario
-        user.setEndereco(novoEndereco); 
+        user.setEndereco(novoEndereco);
+        usuarioResository.save(user);
+        Usuario cadastrado = UsuarioDTO(user);
     
-        return usuarioResository.save(user);
+        return cadastrado;
     }
-    
-    
 
-    public void deletarUsuario(Usuario u){
-        usuarioResository.deleteById(u.getId());
+
+    public void deletarUsuario(Long id){
+        usuarioResository.deleteById(id);
     }
 
     public boolean isEmailCadastrado(String email){
@@ -70,6 +73,10 @@ public class UsuarioService {
 
     public List<Usuario> listarTodos() {
         return usuarioResository.findAll();
+    }
+
+    public Optional<Usuario> buscarId(Long id){
+        return usuarioResository.findById(id);
     }
 
 }

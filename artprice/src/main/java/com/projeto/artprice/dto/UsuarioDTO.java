@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UsuarioDTO {
+    private Long id;
     private String nome;
     private String email;
     private String senha;
@@ -23,6 +24,7 @@ public class UsuarioDTO {
     private String estado;
 
     public UsuarioDTO(Usuario usuario) {
+        this.id = usuario.getId();
         this.nome = usuario.getNome();
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();

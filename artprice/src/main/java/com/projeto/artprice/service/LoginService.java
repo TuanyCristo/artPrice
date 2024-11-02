@@ -14,15 +14,7 @@ public class LoginService{
     private UsuarioRepository usuarioRepository;
 
     public Usuario login(LoginDTO loginDTO) {
-        
-        Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail());
-        try {
-        if (usuario != null && usuario.getSenha().equals(loginDTO.getSenha())) {
-            return usuario;
-        }
-        } catch (Exception e) {
-        }
-        return null;
+        return usuarioRepository.findByEmailAndSenha(loginDTO.getEmail(), loginDTO.getSenha());
     }
 
     

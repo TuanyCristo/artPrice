@@ -43,6 +43,14 @@ public class UsuarioResource {
         return usuarios.stream().map(usuario -> new UsuarioDTO(usuario)).collect(Collectors.toList());
     }
 
-    //@DeleteMapping(value = "/excluir-usuario/{id}")
+    @DeleteMapping(value = "/excluir/{id}")
+    public ResponseEntity<String> deleteUsuario(@PathVariable Long id) {
+        if (!usuarioService.buscarId(id).isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");
+        }
+    
+        usuarioService.deletarUsuario(id);
+        return ResponseEntity.ok("Usuário com ID " + id + " excluído com sucesso.");
+    }
 }
 
