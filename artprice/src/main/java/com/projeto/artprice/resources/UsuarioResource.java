@@ -1,6 +1,8 @@
 package com.projeto.artprice.resources;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,5 +55,28 @@ public class UsuarioResource {
         usuarioService.deletarUsuario(id);
         return ResponseEntity.ok("Usuário com ID " + id + " excluído com sucesso.");
     }
+
+    @GetMapping(value = "/listarId/{id}")
+    public ResponseEntity<?> buscarId(@PathVariable Long id){
+        Optional<Usuario> user = usuarioService.buscarId(id);
+        
+        if(user.get() != null){
+            UsuarioDTO buscando = new UsuarioDTO(user.get());
+            return ResponseEntity.ok(buscando);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");        
+    }
+
+    @PutMapping(value = "/alterarUsuario/{id}")
+    public ResponseEntity<?> alterarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO){
+        UsuarioDTO userAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
+        if(userAtualizado == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");       
+        }
+
+        return ResponseEntity.ok().body(userAtualizado);
+    }
+
 }
 

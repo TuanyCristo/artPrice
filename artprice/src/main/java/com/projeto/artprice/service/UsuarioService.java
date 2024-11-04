@@ -77,4 +77,9 @@ public class UsuarioService {
         return usuarioResository.findById(id);
     }
 
+    public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+        Usuario user = buscarId(id).get();
+        
+    }
+
 }
