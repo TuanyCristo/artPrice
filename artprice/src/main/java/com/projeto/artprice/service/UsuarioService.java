@@ -78,7 +78,41 @@ public class UsuarioService {
     }
 
     public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
+        
         Usuario user = buscarId(id).get();
+
+        if(usuarioDTO.getNome() != null){
+            user.setNome(usuarioDTO.getNome());
+        }
+        if(usuarioDTO.getEmail() != null){
+            user.setEmail(usuarioDTO.getEmail());
+        }
+        if(usuarioDTO.getSenha() != null){
+            user.setSenha(usuarioDTO.getSenha());
+        }
+        if(usuarioDTO.getCep() != null || usuarioDTO.getBairro() != null || usuarioDTO.getCidade() != null 
+            ||usuarioDTO.getEstado() != null || usuarioDTO.getComplemento() != null
+            || usuarioDTO.getLogradouro() != null || usuarioDTO.getNumero() != null){
+            
+            Cep novoCep = new Cep();
+            novoCep.setCep(usuarioDTO.getCep());
+            novoCep.setCidade(usuarioDTO.getCidade());
+            novoCep.setEstado(usuarioDTO.getEstado());
+
+            cepService.cadastrarCep(novoCep);
+            
+            Endereco novo = new Endereco();
+            novo.setBairro(usuarioDTO.getBairro());
+            novo.setCep(novoCep);
+            novo.setComplemento(usuarioDTO.getComplemento());
+            novo.setLogradouro(usuarioDTO.getLogradouro());
+            novo.setNumero(usuarioDTO.getNumero());
+
+            enderecoService.cadastrarEndereco(novo);
+        }
+
+
+        return new UsuarioDTO(user);
         
     }
 

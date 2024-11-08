@@ -12,8 +12,8 @@ public class LoginService{
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Boolean login(LoginDTO loginDTO) {
-        return usuarioRepository.findByEmailAndSenha(loginDTO.getEmail(), loginDTO.getSenha()) != null;
+    public Long login(LoginDTO loginDTO) {
+        return usuarioRepository.findByEmailAndSenha(loginDTO.getEmail(), loginDTO.getSenha()).getId();
     }
 
     

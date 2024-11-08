@@ -21,7 +21,8 @@ public class LoginResource {
      * @return Boolean
      */
     @PostMapping(value = "/login")
-    public Boolean autenticar(@RequestBody LoginDTO loginDTO) {
+    public Long autenticar(@RequestBody LoginDTO loginDTO) {
+
         // Verifica DTO está nulo
         String email = loginDTO.getEmail();
         String senha = loginDTO.getSenha();
@@ -29,10 +30,12 @@ public class LoginResource {
             throw new IllegalArgumentException("E-mail e senha não podem ser nulos");
         }
      
-       if(loginService.login(loginDTO)){
-            return true;
-       }
-       return false;
+        Long id = loginService.login(loginDTO);
+        if(id > 0){
+            return id;
+        }
+
+        return -1L;
     }
 
 }
