@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.projeto.artprice.dto.UsuarioDTO;
 import com.projeto.artprice.model.Usuario;
 import com.projeto.artprice.service.UsuarioService;
@@ -49,12 +50,7 @@ public class UsuarioResource {
     @GetMapping(value = "/verificarEmail/{email}")
     public Boolean verificarEmailCadastrado(@PathVariable String email){
         Boolean isCadastrado = usuarioService.isEmailCadastrado(email);
-        
-        if(isCadastrado){
-            return true;
-        }
-
-        return false;        
+        return isCadastrado;
     }
 
     @DeleteMapping(value = "/excluir/{id}")
@@ -82,6 +78,7 @@ public class UsuarioResource {
     @PutMapping(value = "/alterarUsuario/{id}")
     public ResponseEntity<?> alterarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO){
         UsuarioDTO userAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
+        
         if(userAtualizado == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");       
         }

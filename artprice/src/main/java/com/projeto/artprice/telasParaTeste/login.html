@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <style>
-        /* Estilo básico para o formulário */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -60,7 +59,6 @@
             margin-top: 10px;
         }
 
-        /* Estilo para o popup */
         #welcome-popup {
             display: none;
             position: fixed;
@@ -106,7 +104,6 @@
         <button onclick="window.location.href='cadastro.html'">Cadastrar</button>
     </div>
 
-    <!-- Popup de Bem-vindo -->
     <div id="welcome-popup">
         <h3>Bem-vindo de volta!</h3>
         <p>Você foi autenticado com sucesso.</p>
@@ -114,39 +111,27 @@
     </div>
 
     <script>
-        // Função chamada ao enviar o formulário
         document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Evita o envio do formulário da maneira tradicional
-            
-            // Obtém os valores do formulário
+            event.preventDefault();
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
 
-            // Valida os campos
             if (!email || !senha) {
                 displayError('E-mail e senha não podem ser vazios!');
                 return;
             }
 
-            // Cria o objeto com os dados do login
-            const loginData = {
-                email: email,
-                senha: senha
-            };
+            const loginData = { email: email, senha: senha };
 
-            // Chama a API para autenticar o usuário
             fetch('http://localhost:8080/api/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loginData)
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Dados retornados:', data); // Para debug
-                if (data > 0) {  // Verifica se o retorno é um ID válido (um número positivo)
-                    showWelcomePopup(data); // Exibe o popup de boas-vindas com o ID retornado
+                if (data > 0) { // Verifica se o retorno é um ID válido
+                    showWelcomePopup(data);
                 } else {
                     displayError('Login ou senha incorretos!');
                 }
@@ -157,20 +142,16 @@
             });
         });
 
-        // Função para exibir a mensagem de erro
         function displayError(message) {
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = message;
+            document.getElementById('error-message').textContent = message;
         }
 
-        // Função para exibir o popup de bem-vindo
         function showWelcomePopup(id) {
             const popup = document.getElementById('welcome-popup');
             popup.style.display = 'block';
 
-            // Configura o botão para redirecionar
             document.getElementById('next-button').addEventListener('click', function() {
-                window.location.href = 'usuarioLogado.html?id=' + id; // Passa o ID para a próxima página
+                window.location.href = `usuarioLogado.html?id=${id}`;
             });
         }
     </script>

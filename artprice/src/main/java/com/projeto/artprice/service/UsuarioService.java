@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.projeto.artprice.dto.UsuarioDTO;
 import com.projeto.artprice.model.Cep;
 import com.projeto.artprice.model.Endereco;
@@ -78,50 +79,57 @@ public class UsuarioService {
     }
 
     public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
-        
         Usuario user = buscarId(id).get();
-
-        if(usuarioDTO.getNome() != null){
-            user.setNome(usuarioDTO.getNome());
-        }
-        if(usuarioDTO.getEmail() != null){
-            user.setEmail(usuarioDTO.getEmail());
-        }
-        if(usuarioDTO.getSenha() != null){
-            user.setSenha(usuarioDTO.getSenha());
-        }
-        if(usuarioDTO.getTelefone() != null){
-            user.setTelefone(usuarioDTO.getTelefone());
-        }
-        if(usuarioDTO.getCep() != null || usuarioDTO.getBairro() != null || usuarioDTO.getCidade() != null 
-            ||usuarioDTO.getEstado() != null || usuarioDTO.getComplemento() != null
-            || usuarioDTO.getLogradouro() != null || usuarioDTO.getNumero() != null){
-            
-            Cep novoCep = cepService.buscaCep(usuarioDTO.getCep());
-
-            if(novoCep == null){
-                novoCep = cepService.buscarCepAPI(usuarioDTO.getCep());
-            } else {
-                novoCep.setCep(cepService.buscaCep(usuarioDTO.getCep()).getCep());
-                novoCep.setCidade(usuarioDTO.getCidade());
-                novoCep.setEstado(usuarioDTO.getEstado());
-                cepService.cadastrarCep(novoCep);
+        
+        if(user != null){
+            UsuarioDTO usuarioAtual = new UsuarioDTO(user);
+            if(!usuarioAtual.getNome().equalsIgnoreCase(usuarioDTO.getNome())){
+                user.setNome(usuarioDTO.getNome());
+            }
+            if(!usuarioAtual.getEmail().equalsIgnoreCase(usuarioDTO.getEmail())){
+                user.setEmail(usuarioDTO.getEmail());
+            }
+            if(!usuarioAtual.getSenha().equalsIgnoreCase(usuarioDTO.getSenha())){
+                user.setSenha(usuarioDTO.getEmail());
+            }
+            if(!usuarioAtual.getTelefone().equalsIgnoreCase(usuarioDTO.getTelefone())){
+                user.setTelefone(usuarioDTO.getTelefone());
+            }
+            if(!usuarioAtual.getCep().equalsIgnoreCase(usuarioDTO.getCep())){
+                if(cepService.buscaCep(usuarioDTO.getCep()) != null){
+                    user.getEndereco().getCep().setCep(usuarioDTO.getCep());
+                }
+                if(!usuarioAtual.getCidade().equalsIgnoreCase(usuarioDTO.getCidade())){
+                    user.getEndereco().getCep().setCep(usuarioDTO.getCidade());
+                }
+                if(!usuarioAtual.getEstado().equalsIgnoreCase(usuarioDTO.getEstado())){
+                    user.getEndereco().getCep().setCep(usuarioDTO.getEstado());
+                }
+                cepService.cadastrarCep(user.getEndereco().getCep());
             }
 
-            Endereco novo = new Endereco();
-                novo.setBairro(usuarioDTO.getBairro());
-                novo.setCep(novoCep);
-                novo.setComplemento(usuarioDTO.getComplemento());
-                novo.setLogradouro(usuarioDTO.getLogradouro());
-                novo.setNumero(usuarioDTO.getNumero());
+            if(!usuarioAtual.getLogradouro().equalsIgnoreCase(usuarioDTO.getLogradouro())){
+                user.getEndereco().setLogradouro(usuarioDTO.getLogradouro());
+            }
+            if(!usuarioAtual.getNumero().equalsIgnoreCase(usuarioDTO.getNumero())){
+                user.getEndereco().setNumero(usuarioDTO.getNumero());
+            }
+            if(!usuarioAtual.getComplemento().equalsIgnoreCase(usuarioDTO.getComplemento())){
+                user.getEndereco().setComplemento(usuarioDTO.getComplemento());
+            }
+            if(!usuarioAtual.getBairro().equalsIgnoreCase(usuarioDTO.getBairro())){
+                user.getEndereco().setBairro(usuarioDTO.getBairro());
+            }
 
-                enderecoService.cadastrarEndereco(novo);
+            enderecoService.cadastrarEndereco(user.getEndereco());
+            
+            usuarioResository.save(user);
+
+            return new UsuarioDTO(user);
+
         }
 
-        usuarioResository.save(user);
-
-
-        return new UsuarioDTO(user);
+        return null;
         
     }
 
