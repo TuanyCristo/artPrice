@@ -46,6 +46,17 @@ public class UsuarioResource {
         return usuarios.stream().map(usuario -> new UsuarioDTO(usuario)).collect(Collectors.toList());
     }
 
+    @GetMapping(value = "/verificarEmail/{email}")
+    public Boolean verificarEmailCadastrado(@PathVariable String email){
+        Boolean isCadastrado = usuarioService.isEmailCadastrado(email);
+        
+        if(isCadastrado){
+            return true;
+        }
+
+        return false;        
+    }
+
     @DeleteMapping(value = "/excluir/{id}")
     public ResponseEntity<String> deleteUsuario(@PathVariable Long id) {
         if (!usuarioService.buscarId(id).isPresent()) {

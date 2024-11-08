@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projeto.artprice.dto.LoginDTO;
+import com.projeto.artprice.model.Usuario;
 import com.projeto.artprice.repository.UsuarioRepository;
 
 @Service
@@ -13,7 +14,8 @@ public class LoginService{
     private UsuarioRepository usuarioRepository;
 
     public Long login(LoginDTO loginDTO) {
-        return usuarioRepository.findByEmailAndSenha(loginDTO.getEmail(), loginDTO.getSenha()).getId();
+        Usuario usuario = usuarioRepository.findByEmailAndSenha(loginDTO.getEmail(), loginDTO.getSenha());
+        return usuario != null ? usuario.getId() : -1L;
     }
 
     

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Dados do Usuário</title>
+    <script>
+        let dadosIniciais = {};
+
+        // Função para pegar o parâmetro 'id' da URL
+        function getIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id'); // Retorna o ID que foi passado na URL
+        }
+
+        // Função para gerar o JSON com os dados alterados
+        function gerarJSON() {
+            const usuarioAlterado = {};
+
+            // Coleta os valores dos campos e compara com os valores iniciais
+            const campos = ['nome', 'email', 'senha', 'telefone', 'cep', 'logradouro', 'numero', 'bairro', 'complemento', 'cidade', 'estado'];
+
+            campos.forEach(campo => {
+                const valorAtual = document.getElementById(campo).value;
+                if (valorAtual !== dadosIniciais[campo]) { // Se o valor foi alterado
+                    usuarioAlterado[campo] = valorAtual;
+                }
+            });
+
+            // Exibe o JSON gerado
+            document.getElementById('jsonResultado').textContent = JSON.stringify(usuarioAlterado, null, 2);
+        }
+
+        // Função para carregar os dados iniciais no formulário
+        window.onload = function() {
+            // Pega o ID do usuário da URL
+            const idUsuario = getIdFromUrl();
+            if (!idUsuario) {
+                alert("ID de usuário não encontrado.");
+                return;
+            }
+
+            // Buscar os dados do usuário a partir da API
+            fetch(`http://localhost:8080/usuario/listarId/${idUsuario}`)
+                .then(response => response.json())
+                .then(dadosUsuario => {
+                    // Preenche os campos com os dados retornados pela API
+                    dadosIniciais = dadosUsuario; // Armazena os dados iniciais
+
+                    document.getElementById('id').value = dadosUsuario.id;
+                    document.getElementById('nome').value = dadosUsuario.nome;
+                    document.getElementById('email').value = dadosUsuario.email;
+                    document.getElementById('senha').value = dadosUsuario.senha;
+                    document.getElementById('telefone').value = dadosUsuario.telefone;
+                    document.getElementById('cep').value = dadosUsuario.cep;
+                    document.getElementById('logradouro').value = dadosUsuario.logradouro;
+                    document.getElementById('numero').value = dadosUsuario.numero;
+                    document.getElementById('bairro').value = dadosUsuario.bairro;
+                    document.getElementById('complemento').value = dadosUsuario.complemento;
+                    document.getElementById('cidade').value = dadosUsuario.cidade;
+                    document.getElementById('estado').value = dadosUsuario.estado;
+
+                    // Gera o JSON inicial
+                    gerarJSON();
+                })
+                .catch(error => {
+                    console.error("Erro ao buscar os dados do usuário:", error);
+                });
+        };
+
+        // Função para consultar o ViaCEP e preencher os campos
+        function consultarViaCep() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+            // Verifica se o CEP tem 8 dígitos
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.erro) {
+                            // Se o CEP não for encontrado, limpa os campos e permite a edição
+                            document.getElementById('logradouro').disabled = false;
+                            document.getElementById('bairro').disabled = false;
+                            document.getElementById('logradouro').value = '';
+                            document.getElementById('bairro').value = '';
+                        } else {
+                            // Se o ViaCEP retornar dados, preenche e desabilita os campos
+                            document.getElementById('logradouro').value = data.logradouro;
+                            document.getElementById('bairro').value = data.bairro;
+                            document.getElementById('cidade').value = data.localidade;
+                            document.getElementById('estado').value = data.uf;
+                            document.getElementById('logradouro').disabled = true;
+                            document.getElementById('bairro').disabled = true;
+                        }
+                        // Ativa os campos de número e complemento
+                        document.getElementById('numero').disabled = false;
+                        document.getElementById('complemento').disabled = false;
+                    })
+                    .catch(error => {
+                        console.error("Erro ao consultar ViaCEP:", error);
+                    });
+            } else {
+                // Se o CEP não for válido, limpa e permite editar os campos
+                document.getElementById('logradouro').disabled = false;
+                document.getElementById('bairro').disabled = false;
+                document.getElementById('logradouro').value = '';
+                document.getElementById('bairro').value = '';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Alterar Dados do Usuário</h1>
+
+    <form action="javascript:void(0);" oninput="gerarJSON()">
+        <label for="id">ID do Usuário:</label><br>
+        <input type="text" id="id" name="id" placeholder="ID do usuário" disabled><br><br>
+
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nome" placeholder="Digite o nome"><br><br>
+
+        <label for="email">E-mail:</label><br>
+        <input type="email" id="email" name="email" placeholder="Digite o e-mail"><br><br>
+
+        <label for="senha">Senha:</label><br>
+        <input type="password" id="senha" name="senha" placeholder="Digite a senha"><br><br>
+
+        <label for="telefone">Telefone:</label><br>
+        <input type="text" id="telefone" name="telefone" placeholder="Digite o telefone"><br><br>
+
+        <label for="cep">CEP:</label><br>
+        <input type="text" id="cep" name="cep" placeholder="Digite o CEP" onblur="consultarViaCep()" maxlength="8"><br><br>
+
+        <label for="logradouro">Logradouro:</label><br>
+        <input type="text" id="logradouro" name="logradouro" placeholder="Digite o logradouro"><br><br>
+
+        <label for="numero">Número:</label><br>
+        <input type="text" id="numero" name="numero" placeholder="Digite o número"><br><br>
+
+        <label for="bairro">Bairro:</label><br>
+        <input type="text" id="bairro" name="bairro" placeholder="Digite o bairro"><br><br>
+
+        <label for="complemento">Complemento:</label><br>
+        <input type="text" id="complemento" name="complemento" placeholder="Digite o complemento"><br><br>
+
+        <label for="cidade">Cidade:</label><br>
+        <input type="text" id="cidade" name="cidade" placeholder="Digite a cidade"><br><br>
+
+        <label for="estado">Estado:</label><br>
+        <input type="text" id="estado" name="estado" placeholder="Digite o estado"><br><br>
+
+        <button type="submit">Gerar JSON</button>
+    </form>
+
+    <h2>JSON Gerado:</h2>
+    <pre id="jsonResultado"></pre>
+</body>
+</html>

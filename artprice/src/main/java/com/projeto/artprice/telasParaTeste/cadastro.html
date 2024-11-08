@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <style>
+        input.invalid { border-color: red; }
+        input.valid { border-color: green; }
+    </style>
+</head>
+<body>
+    <h2>Cadastro de Usuário</h2>
+    <form id="meuFormulario">
+        <label>Nome:</label>
+        <input type="text" id="nome" required><br>
+
+        <label>Email:</label>
+        <input type="email" id="email" required><span id="emailStatus"></span><br>
+
+        <label>Senha:</label>
+        <input type="password" id="senha" required><br>
+
+        <label>Telefone:</label>
+        <input type="tel" id="telefone" required><br>
+
+        <label>CEP:</label>
+        <input type="text" id="cep" required><br>
+
+        <label>Logradouro:</label>
+        <input type="text" id="logradouro" disabled><br>
+
+        <label>Número:</label>
+        <input type="text" id="numero" required><br>
+
+        <label>Bairro:</label>
+        <input type="text" id="bairro" disabled><br>
+
+        <label>Complemento:</label>
+        <input type="text" id="complemento"><br>
+
+        <label>Cidade:</label>
+        <input type="text" id="cidade" disabled><br>
+
+        <label>Estado:</label>
+        <input type="text" id="estado" disabled><br>
+
+        <button type="button" onclick="cadastrar()">Cadastrar</button>
+        <button type="button" onclick="cancelar()">Cancelar</button>
+    </form>
+
+    <script>
+        // Valida o email ao digitar
+        document.getElementById("email").addEventListener("input", async function() {
+            const email = this.value;
+            if (email) {
+                const response = await fetch(`http://localhost:8080/usuario/verificarEmail/${email}`);
+                const emailJaCadastrado = await response.json();
+
+                const emailInput = document.getElementById("email");
+                const emailStatus = document.getElementById("emailStatus");
+
+                if (emailJaCadastrado) {
+                    emailInput.classList.add("invalid");
+                    emailInput.classList.remove("valid");
+                    emailStatus.textContent = "Email já cadastrado!";
+                } else {
+                    emailInput.classList.add("valid");
+                    emailInput.classList.remove("invalid");
+                    emailStatus.textContent = "Email disponível.";
+                }
+            }
+        });
+
+        // Preenche automaticamente o endereço pelo CEP
+        document.getElementById("cep").addEventListener("input", async function() {
+            const cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (!data.erro) {
+                    document.getElementById("logradouro").value = data.logradouro || "";
+                    document.getElementById("bairro").value = data.bairro || "";
+                    document.getElementById("cidade").value = data.localidade;
+                    document.getElementById("estado").value = data.uf;
+
+                    document.getElementById("logradouro").disabled = !!data.logradouro;
+                    document.getElementById("bairro").disabled = !!data.bairro;
+                }
+            }
+        });
+
+        // Função de cadastro
+        async function cadastrar() {
+            const nome = document.getElementById("nome").value;
+            const email = document.getElementById("email").value;
+            const senha = document.getElementById("senha").value;
+            const telefone = document.getElementById("telefone").value;
+            const cep = document.getElementById("cep").value;
+            const logradouro = document.getElementById("logradouro").value;
+            const numero = document.getElementById("numero").value;
+            const bairro = document.getElementById("bairro").value;
+            const complemento = document.getElementById("complemento").value;
+            const cidade = document.getElementById("cidade").value;
+            const estado = document.getElementById("estado").value;
+
+            if (!nome || !email || !senha || !telefone || !cep || !logradouro || !numero || !bairro || !cidade || !estado) {
+                alert("Por favor, preencha todos os campos obrigatórios.");
+                return;
+            }
+
+            const dadosUsuario = {
+                nome,
+                email,
+                senha,
+                telefone,
+                cep,
+                logradouro,
+                numero,
+                bairro,
+                complemento,
+                cidade,
+                estado
+            };
+
+            try {
+                const response = await fetch("http://localhost:8080/usuario/cadastro", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dadosUsuario)
+                });
+
+                if (response.ok) {
+                    const confirmLogin = confirm("Cadastro efetuado com sucesso! Deseja fazer login?");
+                    if (confirmLogin) {
+                        window.location.href = "login.html";
+                    } else {
+                        document.getElementById("meuFormulario").reset();
+                    }
+                } else {
+                    alert("Erro ao cadastrar, tente novamente.");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                alert("Erro ao cadastrar, tente novamente.");
+            }
+        }
+
+        // Função para cancelar e voltar para a página de login
+        function cancelar() {
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>

@@ -90,26 +90,35 @@ public class UsuarioService {
         if(usuarioDTO.getSenha() != null){
             user.setSenha(usuarioDTO.getSenha());
         }
+        if(usuarioDTO.getTelefone() != null){
+            user.setTelefone(usuarioDTO.getTelefone());
+        }
         if(usuarioDTO.getCep() != null || usuarioDTO.getBairro() != null || usuarioDTO.getCidade() != null 
             ||usuarioDTO.getEstado() != null || usuarioDTO.getComplemento() != null
             || usuarioDTO.getLogradouro() != null || usuarioDTO.getNumero() != null){
             
-            Cep novoCep = new Cep();
-            novoCep.setCep(usuarioDTO.getCep());
-            novoCep.setCidade(usuarioDTO.getCidade());
-            novoCep.setEstado(usuarioDTO.getEstado());
+            Cep novoCep = cepService.buscaCep(usuarioDTO.getCep());
 
-            cepService.cadastrarCep(novoCep);
-            
+            if(novoCep == null){
+                novoCep = cepService.buscarCepAPI(usuarioDTO.getCep());
+            } else {
+                novoCep.setCep(cepService.buscaCep(usuarioDTO.getCep()).getCep());
+                novoCep.setCidade(usuarioDTO.getCidade());
+                novoCep.setEstado(usuarioDTO.getEstado());
+                cepService.cadastrarCep(novoCep);
+            }
+
             Endereco novo = new Endereco();
-            novo.setBairro(usuarioDTO.getBairro());
-            novo.setCep(novoCep);
-            novo.setComplemento(usuarioDTO.getComplemento());
-            novo.setLogradouro(usuarioDTO.getLogradouro());
-            novo.setNumero(usuarioDTO.getNumero());
+                novo.setBairro(usuarioDTO.getBairro());
+                novo.setCep(novoCep);
+                novo.setComplemento(usuarioDTO.getComplemento());
+                novo.setLogradouro(usuarioDTO.getLogradouro());
+                novo.setNumero(usuarioDTO.getNumero());
 
-            enderecoService.cadastrarEndereco(novo);
+                enderecoService.cadastrarEndereco(novo);
         }
+
+        usuarioResository.save(user);
 
 
         return new UsuarioDTO(user);
