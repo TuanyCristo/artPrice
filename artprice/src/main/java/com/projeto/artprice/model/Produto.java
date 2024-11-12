@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotNull;
 public class Produto {
     @Id //chave primária do db
     @GeneratedValue(strategy = GenerationType.IDENTITY) //gera automático
-    private String id;
+    private Long id;
 
     @NotNull
     private String nome;
