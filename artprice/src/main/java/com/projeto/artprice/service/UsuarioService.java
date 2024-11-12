@@ -18,7 +18,7 @@ import com.projeto.artprice.repository.UsuarioRepository;
 public class UsuarioService {
 
     @Autowired
-    private UsuarioRepository usuarioResository;
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private CepService cepService;
@@ -56,81 +56,77 @@ public class UsuarioService {
     
         // Associa o Endereco ao Usuario
         user.setEndereco(novoEndereco);
-        Usuario cadastrado = usuarioResository.save(user);
+        Usuario cadastrado = usuarioRepository.save(user);
 
         return new UsuarioDTO(cadastrado);
     }
 
     public void deletarUsuario(Long id){
-        usuarioResository.deleteById(id);
+        usuarioRepository.deleteById(id);
     }
 
     public boolean isEmailCadastrado(String email){
-        Usuario user = usuarioResository.findByEmail(email);
+        Usuario user = usuarioRepository.findByEmail(email);
         return user != null;
     }
 
     public List<Usuario> listarTodos() {
-        return usuarioResository.findAll();
+        return usuarioRepository.findAll();
     }
 
     public Optional<Usuario> buscarId(Long id){
-        return usuarioResository.findById(id);
+        return usuarioRepository.findById(id);
     }
 
     public UsuarioDTO atualizarUsuario(Long id, UsuarioDTO usuarioDTO) {
-        Usuario user = buscarId(id).get();
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
         
-        if(user != null){
-            UsuarioDTO usuarioAtual = new UsuarioDTO(user);
-            if(!usuarioAtual.getNome().equalsIgnoreCase(usuarioDTO.getNome())){
+        if(usuarioOptional.isPresent()){
+            Usuario user = usuarioOptional.get();
+
+            if (usuarioDTO.getNome() != null && !usuarioDTO.getNome().isEmpty()) {
                 user.setNome(usuarioDTO.getNome());
             }
-            if(!usuarioAtual.getEmail().equalsIgnoreCase(usuarioDTO.getEmail())){
+            if (usuarioDTO.getEmail() != null && !usuarioDTO.getEmail().isEmpty()) {
                 user.setEmail(usuarioDTO.getEmail());
             }
-            if(!usuarioAtual.getSenha().equalsIgnoreCase(usuarioDTO.getSenha())){
-                user.setSenha(usuarioDTO.getEmail());
+            if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
+                user.setSenha(usuarioDTO.getSenha());
             }
-            if(!usuarioAtual.getTelefone().equalsIgnoreCase(usuarioDTO.getTelefone())){
+            if (usuarioDTO.getTelefone() != null && !usuarioDTO.getTelefone().isEmpty()) {
                 user.setTelefone(usuarioDTO.getTelefone());
             }
-            if(!usuarioAtual.getCep().equalsIgnoreCase(usuarioDTO.getCep())){
+
+            if(usuarioDTO.getCep() != null && !usuarioDTO.getCep().isEmpty()){
                 if(cepService.buscaCep(usuarioDTO.getCep()) != null){
                     user.getEndereco().getCep().setCep(usuarioDTO.getCep());
+                    user.getEndereco().getCep().setCidade(usuarioDTO.getCidade());
+                    user.getEndereco().getCep().setEstado(usuarioDTO.getEstado());
+                    cepService.cadastrarCep(user.getEndereco().getCep());
+
+                    if(usuarioDTO.getLogradouro() != null && !usuarioDTO.getLogradouro().isEmpty()){
+                        user.getEndereco().setLogradouro(usuarioDTO.getLogradouro());
+                    }
+                    if(usuarioDTO.getNumero() != null && !usuarioDTO.getNumero().isEmpty()){
+                        user.getEndereco().setNumero(usuarioDTO.getNumero());
+                    }
+                    if(usuarioDTO.getComplemento() != null && !usuarioDTO.getComplemento().isEmpty()){
+                        user.getEndereco().setComplemento(usuarioDTO.getComplemento());
+                    }
+                    if(usuarioDTO.getBairro() != null && !usuarioDTO.getBairro().isEmpty()){
+                        user.getEndereco().setBairro(usuarioDTO.getBairro());
+                    }
+                
+                    enderecoService.cadastrarEndereco(user.getEndereco());
+                    usuarioRepository.save(user);
+                
                 }
-                if(!usuarioAtual.getCidade().equalsIgnoreCase(usuarioDTO.getCidade())){
-                    user.getEndereco().getCep().setCep(usuarioDTO.getCidade());
-                }
-                if(!usuarioAtual.getEstado().equalsIgnoreCase(usuarioDTO.getEstado())){
-                    user.getEndereco().getCep().setCep(usuarioDTO.getEstado());
-                }
-                cepService.cadastrarCep(user.getEndereco().getCep());
-            }
-
-            if(!usuarioAtual.getLogradouro().equalsIgnoreCase(usuarioDTO.getLogradouro())){
-                user.getEndereco().setLogradouro(usuarioDTO.getLogradouro());
-            }
-            if(!usuarioAtual.getNumero().equalsIgnoreCase(usuarioDTO.getNumero())){
-                user.getEndereco().setNumero(usuarioDTO.getNumero());
-            }
-            if(!usuarioAtual.getComplemento().equalsIgnoreCase(usuarioDTO.getComplemento())){
-                user.getEndereco().setComplemento(usuarioDTO.getComplemento());
-            }
-            if(!usuarioAtual.getBairro().equalsIgnoreCase(usuarioDTO.getBairro())){
-                user.getEndereco().setBairro(usuarioDTO.getBairro());
-            }
-
-            enderecoService.cadastrarEndereco(user.getEndereco());
-            
-            usuarioResository.save(user);
-
-            return new UsuarioDTO(user);
-
+                return new UsuarioDTO(user);
+          
+            }  
         }
 
         return null;
-        
     }
 
 }
