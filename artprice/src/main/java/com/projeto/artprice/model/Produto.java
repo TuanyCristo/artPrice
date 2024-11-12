@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull;
 @NoArgsConstructor //cria o construtor sem argumentos
 @AllArgsConstructor //cria o contrutor com todos os argumentos
 public class Produto {
+
     @Id //chave primária do db
     @GeneratedValue(strategy = GenerationType.IDENTITY) //gera automático
     private Long id;

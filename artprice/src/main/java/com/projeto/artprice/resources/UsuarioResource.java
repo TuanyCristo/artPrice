@@ -4,8 +4,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +34,8 @@ public class UsuarioResource {
      * @param usuario
      */
     @PostMapping(value = "/cadastro")
-    public ResponseEntity<UsuarioDTO> cadastrarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
-        UsuarioDTO novoUsuario = usuarioService.cadastrarUsuario(usuarioDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+    public UsuarioDTO cadastrarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.cadastrarUsuario(usuarioDTO);
     }
 
     @GetMapping(value = "/listar-usuarios")
@@ -54,36 +51,30 @@ public class UsuarioResource {
     }
 
     @DeleteMapping(value = "/excluir/{id}")
-    public ResponseEntity<String> deleteUsuario(@PathVariable Long id) {
+    public Boolean deleteUsuario(@PathVariable Long id) {
         if (!usuarioService.buscarId(id).isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");
+            return false;
         }
-    
         usuarioService.deletarUsuario(id);
-        return ResponseEntity.ok("Usuário com ID " + id + " excluído com sucesso.");
+        return true;
     }
 
     @GetMapping(value = "/listarId/{id}")
-    public ResponseEntity<?> buscarId(@PathVariable Long id){
+    public UsuarioDTO buscarId(@PathVariable Long id){
         Optional<Usuario> user = usuarioService.buscarId(id);
         
         if(user.get() != null){
             UsuarioDTO buscando = new UsuarioDTO(user.get());
-            return ResponseEntity.ok(buscando);
+            return buscando;
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");        
+        return null;        
     }
 
     @PutMapping(value = "/alterarUsuario/{id}")
-    public ResponseEntity<?> alterarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO){
-        UsuarioDTO userAtualizado = usuarioService.atualizarUsuario(id, usuarioDTO);
-        
-        if(userAtualizado == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário com ID " + id + " não encontrado.");       
-        }
-
-        return ResponseEntity.ok().body(userAtualizado);
+    public UsuarioDTO alterarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO){
+         
+        return usuarioService.atualizarUsuario(id, usuarioDTO);
     }
 
 }

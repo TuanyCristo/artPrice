@@ -6,4 +6,5 @@ import com.projeto.artprice.model.Produto;
 
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long>{
+
 }

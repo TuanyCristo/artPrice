@@ -1,12 +1,15 @@
 package com.projeto.artprice.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.projeto.artprice.model.Produto;
 import com.projeto.artprice.repository.ProdutoRepository;
 
+@Service
 public class ProdutoService {
     @Autowired
     private ProdutoRepository produtoRepository;
@@ -33,5 +36,9 @@ public class ProdutoService {
             return true;
         }
         return false;
+    }
+
+    public List<Produto> listarTodos(){
+        return produtoRepository.findAll();
     }
 }
