@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
-
 @RestController
 @RequestMapping(value = "/produtos")
 public class ProdutoResource {
@@ -44,6 +41,12 @@ public class ProdutoResource {
     public Boolean alterarPrdoduto(@PathVariable Long id, @RequestBody Produto p) {
         return produtoService.alterarProduto(id, p);
     }
+
+    @GetMapping("/verProduto/{id}")
+    public Produto verProduto(@PathVariable Long id) {
+        return produtoService.mostrarProduto(id).get();
+    }
+    
     
     
     

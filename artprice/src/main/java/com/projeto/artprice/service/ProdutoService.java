@@ -41,4 +41,8 @@ public class ProdutoService {
     public List<Produto> listarTodos(){
         return produtoRepository.findAll();
     }
+
+    public Optional<Produto> mostrarProduto(Long id){
+        return produtoRepository.findById(id);
+    }
 }
