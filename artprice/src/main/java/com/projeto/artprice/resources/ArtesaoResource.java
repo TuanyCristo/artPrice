@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.projeto.artprice.dto.UsuarioDTO;
-import com.projeto.artprice.model.Usuario;
-import com.projeto.artprice.service.UsuarioService;
+import com.projeto.artprice.dto.ArtesaoDTO;
+import com.projeto.artprice.model.Artesao;
+import com.projeto.artprice.service.ArtesaoService;
 
 @RestController
 @RequestMapping(value = "/usuario")
-public class UsuarioResource {
+public class ArtesaoResource {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private ArtesaoService artesaoService;
     
     /**
      * Metodo que cria o usuário, primeiro ele verifica se o endereco e 
@@ -34,37 +34,37 @@ public class UsuarioResource {
      * @param usuario
      */
     @PostMapping(value = "/cadastro")
-    public UsuarioDTO cadastrarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
-        return usuarioService.cadastrarUsuario(usuarioDTO);
+    public ArtesaoDTO cadastrarUsuario(@RequestBody ArtesaoDTO usuarioDTO) {
+        return artesaoService.cadastrarUsuario(usuarioDTO);
     }
 
     @GetMapping(value = "/listar-usuarios")
-    public List<UsuarioDTO> listarUsuarios() {
-        List<Usuario> usuarios = usuarioService.listarTodos();
-        return usuarios.stream().map(usuario -> new UsuarioDTO(usuario)).collect(Collectors.toList());
+    public List<ArtesaoDTO> listarUsuarios() {
+        List<Artesao> usuarios = artesaoService.listarTodos();
+        return usuarios.stream().map(usuario -> new ArtesaoDTO(usuario)).collect(Collectors.toList());
     }
 
     @GetMapping(value = "/verificarEmail/{email}")
     public Boolean verificarEmailCadastrado(@PathVariable String email){
-        Boolean isCadastrado = usuarioService.isEmailCadastrado(email);
+        Boolean isCadastrado = artesaoService.isEmailCadastrado(email);
         return isCadastrado;
     }
 
     @DeleteMapping(value = "/excluir/{id}")
     public Boolean deleteUsuario(@PathVariable Long id) {
-        if (!usuarioService.buscarId(id).isPresent()) {
+        if (!artesaoService.buscarId(id).isPresent()) {
             return false;
         }
-        usuarioService.deletarUsuario(id);
+        artesaoService.deletarUsuario(id);
         return true;
     }
 
     @GetMapping(value = "/listarId/{id}")
-    public UsuarioDTO buscarId(@PathVariable Long id){
-        Optional<Usuario> user = usuarioService.buscarId(id);
+    public ArtesaoDTO buscarId(@PathVariable Long id){
+        Optional<Artesao> user = artesaoService.buscarId(id);
         
         if(user.get() != null){
-            UsuarioDTO buscando = new UsuarioDTO(user.get());
+            ArtesaoDTO buscando = new ArtesaoDTO(user.get());
             return buscando;
         }
 
@@ -72,9 +72,9 @@ public class UsuarioResource {
     }
 
     @PutMapping(value = "/alterarUsuario/{id}")
-    public UsuarioDTO alterarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO){
+    public ArtesaoDTO alterarUsuario(@PathVariable Long id, @RequestBody ArtesaoDTO usuarioDTO){
          
-        return usuarioService.atualizarUsuario(id, usuarioDTO);
+        return artesaoService.atualizarUsuario(id, usuarioDTO);
     }
 
 }
