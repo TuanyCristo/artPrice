@@ -1,5 +1,8 @@
 package com.projeto.artprice.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +49,14 @@ public class ClienteService {
             return new ClienteDTO(atualizado);
         }
         return null;
+    }
+
+    public Optional<Cliente> buscarCliente(Long id){
+        return clienteRepository.findById(id);
+    }
+
+    public List<Cliente> listarTodos(){
+        return clienteRepository.findAll();
     }
 
 
