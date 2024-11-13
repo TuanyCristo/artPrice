@@ -1,29 +1,29 @@
 package com.projeto.artprice.resources;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.projeto.artprice.model.Cep;
-import com.projeto.artprice.model.Endereco;
+import com.projeto.artprice.dto.UsuarioDTO;
 import com.projeto.artprice.model.Usuario;
-import com.projeto.artprice.service.CepService;
-import com.projeto.artprice.service.EnderecoService;
 import com.projeto.artprice.service.UsuarioService;
 
 @RestController
-@RequestMapping(value = "/usuarios")
+@RequestMapping(value = "/usuario")
 public class UsuarioResource {
-	@Autowired
-    private UsuarioService usuarioService;
-    @Autowired
-    private EnderecoService enderecoService;
-    @Autowired
-    private CepService cepService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+    
     /**
      * Metodo que cria o usuário, primeiro ele verifica se o endereco e 
      * o cep nao estao nulos e depois ele setta novamente(talvez eu esteja sendo
@@ -34,30 +34,48 @@ public class UsuarioResource {
      * @param usuario
      */
     @PostMapping(value = "/cadastro")
-    public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
-        // Verifica Endereço nulo
-        Endereco endereco = usuario.getEndereco();
-        if (endereco == null) {
-            throw new IllegalArgumentException("Endereço não pode ser nulo");
-        }
-    
-        // Verifique CEP nulo
-        Cep cep = endereco.getCep();
-        if (cep == null) {
-            throw new IllegalArgumentException("CEP não pode ser nulo");
-        }
-    
-        // Salva Cep
-        Cep cepSalvo = cepService.cadastrarCep(cep);
-        endereco.setCep(cepSalvo);
-    
-        // Salva Endereço
-        Endereco enderecoSalvo = enderecoService.salvarEndereco(endereco);
-        usuario.setEndereco(enderecoSalvo);
-    
-        // Salva Usuario
-        Usuario novoUsuario = usuarioService.cadastrarUsuario(usuario);
-        return ResponseEntity.ok().body(novoUsuario);
+    public UsuarioDTO cadastrarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.cadastrarUsuario(usuarioDTO);
     }
+
+    @GetMapping(value = "/listar-usuarios")
+    public List<UsuarioDTO> listarUsuarios() {
+        List<Usuario> usuarios = usuarioService.listarTodos();
+        return usuarios.stream().map(usuario -> new UsuarioDTO(usuario)).collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/verificarEmail/{email}")
+    public Boolean verificarEmailCadastrado(@PathVariable String email){
+        Boolean isCadastrado = usuarioService.isEmailCadastrado(email);
+        return isCadastrado;
+    }
+
+    @DeleteMapping(value = "/excluir/{id}")
+    public Boolean deleteUsuario(@PathVariable Long id) {
+        if (!usuarioService.buscarId(id).isPresent()) {
+            return false;
+        }
+        usuarioService.deletarUsuario(id);
+        return true;
+    }
+
+    @GetMapping(value = "/listarId/{id}")
+    public UsuarioDTO buscarId(@PathVariable Long id){
+        Optional<Usuario> user = usuarioService.buscarId(id);
+        
+        if(user.get() != null){
+            UsuarioDTO buscando = new UsuarioDTO(user.get());
+            return buscando;
+        }
+
+        return null;        
+    }
+
+    @PutMapping(value = "/alterarUsuario/{id}")
+    public UsuarioDTO alterarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO usuarioDTO){
+         
+        return usuarioService.atualizarUsuario(id, usuarioDTO);
+    }
+
 }
 

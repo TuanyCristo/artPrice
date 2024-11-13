@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Cadastro</title>
+    <style>
+        .readonly-field {
+            background-color: #f0f0f0;
+            pointer-events: none;
+        }
+
+        .field-container {
+            margin-bottom: 10px;
+        }
+
+        .field-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .field-container input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        #save-button, #delete-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #save-button:hover, #delete-button:hover {
+            background-color: #45a049;
+        }
+
+        #edit-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #edit-button:hover {
+            background-color: #0056b3;
+        }
+
+        #welcome-message {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcome-message">
+        <!-- Mensagem de boas-vindas -->
+    </div>
+
+    <div id="user-details">
+        <!-- Dados do usuário serão carregados aqui -->
+    </div>
+
+    <button id="edit-button">Alterar Cadastro</button>
+    <button id="delete-button">Excluir Conta</button>
+
+    <div id="error-message"></div>
+
+    <script>
+        let userId = new URLSearchParams(window.location.search).get('id');
+    
+        if (!userId) {
+            console.error('Erro: userId não encontrado');
+            return; // Se não encontrar o userId, interrompe a execução
+        }
+
+
+        // Exibe boas-vindas
+        function displayWelcomeMessage(username) {
+            document.getElementById('welcome-message').innerHTML = `Bem-vindo(a), ${username}!`;
+        }
+
+        document.getElementById('edit-button').addEventListener('click', () => {
+            const userDetailsContainer = document.getElementById('user-details');
+            fetch(`http://localhost:8080/usuario/listarId/${userId}`)
+                .then(response => response.json())
+                .then(user => {
+                    displayWelcomeMessage(user.nome); // Exibe boas-vindas com nome do usuário
+
+                    userDetailsContainer.innerHTML = `
+                        <div class="field-container">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" value="${user.nome}">
+                        </div>
+                        <div class="field-container">
+                            <label for="email">E-mail:</label>
+                            <input type="email" id="email" value="${user.email}">
+                        </div>
+                        <div class="field-container">
+                            <label for="telefone">Telefone:</label>
+                            <input type="tel" id="telefone" value="${user.telefone}">
+                        </div>
+                        <div class="field-container">
+                            <label for="cep">CEP:</label>
+                            <input type="text" id="cep" value="${user.cep}">
+                        </div>
+                        <div class="field-container">
+                            <label for="logradouro">Logradouro:</label>
+                            <input type="text" id="logradouro" value="${user.logradouro}">
+                        </div>
+                        <div class="field-container">
+                            <label for="numero">Número:</label>
+                            <input type="text" id="numero" value="${user.numero}">
+                        </div>
+                        <div class="field-container">
+                            <label for="bairro">Bairro:</label>
+                            <input type="text" id="bairro" value="${user.bairro}">
+                        </div>
+                        <div class="field-container">
+                            <label for="complemento">Complemento:</label>
+                            <input type="text" id="complemento" value="${user.complemento}">
+                        </div>
+                        <div class="field-container">
+                            <label for="cidade">Cidade:</label>
+                            <input type="text" id="cidade" value="${user.cidade}">
+                        </div>
+                        <div class="field-container">
+                            <label for="estado">Estado:</label>
+                            <input type="text" id="estado" value="${user.estado}">
+                        </div>
+                        <button id="save-button">Salvar Alterações</button>
+                    `;
+
+                    // Evento para buscar o endereço ao alterar o CEP
+                    document.getElementById('cep').addEventListener('blur', () => {
+                        const cep = document.getElementById('cep').value.replace(/\D/g, '');
+                        if (cep.length === 8) {
+                            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const logradouroField = document.getElementById('logradouro');
+                                    const bairroField = document.getElementById('bairro');
+                                    const cidadeField = document.getElementById('cidade');
+                                    const estadoField = document.getElementById('estado');
+
+                                    // Se os campos logradouro ou bairro não retornarem dados
+                                    if (data.erro || !data.logradouro || !data.bairro) {
+                                        // Permitir edição de todos os campos
+                                        logradouroField.removeAttribute('readonly');
+                                        bairroField.removeAttribute('readonly');
+                                        cidadeField.removeAttribute('readonly');
+                                        estadoField.removeAttribute('readonly');
+                                        cidadeField.value = data.localidade || '';
+                                        estadoField.value = data.uf || '';
+                                    } else {
+                                        // Preencher os campos e tornar apenas número e complemento editáveis
+                                        logradouroField.value = data.logradouro || '';
+                                        bairroField.value = data.bairro || '';
+                                        cidadeField.value = data.localidade || '';
+                                        estadoField.value = data.uf || '';
+
+                                        // Tornar logradouro e bairro não editáveis
+                                        logradouroField.setAttribute('readonly', true);
+                                        bairroField.setAttribute('readonly', true);
+                                        cidadeField.setAttribute('readonly', true);
+                                        estadoField.setAttribute('readonly', true);
+
+                                        logradouroField.classList.add('readonly-field');
+                                        bairroField.classList.add('readonly-field');
+                                        cidadeField.classList.add('readonly-field');
+                                        estadoField.classList.add('readonly-field');
+                                    }
+                                })
+                                .catch(error => {
+                                    displayError('Erro ao buscar o CEP.');
+                                    console.error('Erro na busca do CEP:', error);
+                                });
+                        }
+                    });
+
+                    // Enviar dados atualizados para o backend
+                    document.getElementById('save-button').addEventListener('click', () => {
+                        const updatedUser = {
+                            cep: document.getElementById('cep').value,
+                            numero: document.getElementById('numero').value,
+                            cidade: document.getElementById('cidade').value,
+                            estado: document.getElementById('estado').value,
+                            bairro: document.getElementById('bairro').value,
+                            logradouro: document.getElementById('logradouro').value
+                        };
+
+                        fetch(`http://localhost:8080/usuario/alterarUsuario/${userId}`, {
+                            method: 'PUT', // Mudado para PUT para atualização
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(updatedUser)
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert('Dados atualizados com sucesso!');
+                                // Atualiza os dados sem recarregar a tela
+                                loadUserData(userId);
+                            } else {
+                                alert('Erro ao atualizar os dados!');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao enviar dados:', error);
+                            alert('Erro ao atualizar os dados!');
+                        });
+                    });
+                })
+                .catch(error => {
+                    displayError('Erro ao carregar os dados do usuário.');
+                    console.error('Erro na requisição:', error);
+                });
+        });
+
+        // Função para exibir erro
+        function displayError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+        }
+
+        // Função para carregar os dados do usuário
+        function loadUserData(id) {
+            fetch(`http://localhost:8080/usuario/listarId/${id}`)
+                .then(response => response.json())
+                .then(user => {
+                    displayWelcomeMessage(user.nome); // Exibe boas-vindas com nome do usuário
+                    // Atualiza apenas os campos do usuário na página sem resetar a tela
+                    document.getElementById('cep').value = user.cep;
+                    document.getElementById('logradouro').value = user.logradouro;
+                    document.getElementById('numero').value = user.numero;
+                    document.getElementById('bairro').value = user.bairro;
+                    document.getElementById('complemento').value = user.complemento;
+                    document.getElementById('cidade').value = user.cidade;
+                    document.getElementById('estado').value = user.estado;
+                })
+                .catch(error => {
+                    displayError('Erro ao carregar dados do usuário.');
+                    console.error('Erro ao carregar dados:', error);
+                });
+        }
+
+        // Excluindo a conta do usuário
+        document.getElementById('delete-button').addEventListener('click', () => {
+            if (confirm("Tem certeza que deseja excluir sua conta? Esta ação é irreversível.")) {
+                fetch(`http://localhost:8080/usuario/excluirUsuario/${userId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Conta excluída com sucesso!");
+                        window.location.href = '/'; // Redireciona para a página inicial
+                    } else {
+                        alert("Erro ao excluir a conta!");
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro ao excluir conta:", error);
+                    alert("Erro ao excluir a conta!");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
