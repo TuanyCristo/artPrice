@@ -43,7 +43,7 @@ public class ClienteResource {
         return alterado;
     }
 
-    @DeleteMapping(value = "/excluirCliente")
+    @DeleteMapping(value = "/excluirCliente/{id}")
     public Boolean excluirCliente(@PathVariable Long id){
         Optional<Cliente> excluir = clienteService.buscarCliente(id);
         if(excluir.isPresent()){
