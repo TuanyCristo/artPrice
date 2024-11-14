@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,31 +14,35 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor // Cria o construtor com todos os argumentos
 public class Orcamento {
 
-    @Id // Chave primária do db
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Gera automaticamente
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @ManyToOne
+    @JoinColumn(name = "artesao_id")
     private Artesao artesao;
 
-    @NotNull
     @ManyToOne
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    @NotNull
+    @ManyToMany
+    @JoinTable(
+        name = "orcamento_produto", 
+        joinColumns = @JoinColumn(name = "orcamento_id"), 
+        inverseJoinColumns = @JoinColumn(name = "produto_id")
+    )
+
+    private List<Produto> produtos;
+
     private LocalDate dataOrcamento;
 
-    @NotNull
     private LocalDate dataValidade;
 
-    @NotBlank
     private double frete;
 
-    @NotNull
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // Relacionamento Um-para-Muitos com Produto
-    private List<Produto> listaProdutos;
+    private double desconto;
 
-    @NotNull
     private double valorTotal;
+
 }
