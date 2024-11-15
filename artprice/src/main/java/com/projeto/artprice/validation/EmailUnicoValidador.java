@@ -1,14 +1,14 @@
 package com.projeto.artprice.validation;
 
 
-import com.projeto.artprice.repository.UsuarioRepository;
+import com.projeto.artprice.repository.ArtesaoRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EmailUnicoValidador implements ConstraintValidator<EmailUnico, String> {
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private ArtesaoRepository usuarioRepository;
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
