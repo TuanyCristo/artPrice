@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,16 +34,20 @@ public class Orcamento {
         inverseJoinColumns = @JoinColumn(name = "produto_id")
     )
 
+    @NotNull
     private List<Produto> produtos;
 
+    @NotNull
     private LocalDate dataOrcamento;
-
+    @NotNull
     private LocalDate dataValidade;
 
+    @NotNull
     private double frete;
 
     private double desconto;
 
+    @NotNull
     private double valorTotal;
 
 }
