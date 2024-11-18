@@ -30,7 +30,7 @@ public class CepService {
         return buscarCepAPI(cep);
     }
 
-        /**
+    /**
      * Método para consultar a API externa (ViaCEP) e tratar o retorno.
      * @param cep
      * @return
@@ -71,11 +71,4 @@ public class CepService {
         return restTemplate.getForObject(url, CepDTO.class);
     }
     
-
-
-
-
-
-
-
 }
