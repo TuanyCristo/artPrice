@@ -23,5 +23,9 @@ public class Produto {
     private String nome;
 
     @NotNull
+    private String url;
+
+
+    @NotNull
     private double valor;
 }
