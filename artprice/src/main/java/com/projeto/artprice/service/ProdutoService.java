@@ -31,6 +31,7 @@ public class ProdutoService {
         if(produtoOptional.isPresent() && !produtoOptional.isEmpty()){
             Produto novo = produtoOptional.get();
             novo.setNome(p.getNome());
+            novo.setUrl(p.getUrl());
             novo.setValor(p.getValor());
             produtoRepository.save(novo);
             return true;
